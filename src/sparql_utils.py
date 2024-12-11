@@ -777,7 +777,7 @@ def get_label(entity: str) -> str:
     if len(rtn) != 0:
         return rtn[0]
     else:
-        return None
+        return entity
 
 
 import pyodbc
@@ -1172,7 +1172,8 @@ def get_another_entity(entity: str, relation: str, return_label=True):
     }  }"""
     output = execute_query(query1) + execute_query(query2)
     if return_label:
-            output = dict(zip(output, [get_label_with_odbc(e) for e in output]))
+            output = dict(zip([get_label_with_odbc(e) or e for e in output], output 
+))
     return output
 
 def get_friendly_name(entity: str) -> str:
