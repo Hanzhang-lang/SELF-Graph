@@ -1,0 +1,1 @@
+CUDA_VISIBLE_DEVICES=2,3 python -m src.inference --world_size 2 --model_name /media/disk2/llama_factory/generation_0110_no_mask --output_file ./output/inference/webqsp_0110model_code_solerelation_0113_res.json

@@ -5,7 +5,8 @@ import os
 import re
 import string
 from sklearn.metrics import precision_score
-
+from typing import List
+import random
 
 
 
@@ -65,3 +66,35 @@ def extract_topk_prediction(prediction, k=-1):
         k = len(results)
     results = sorted(results.items(), key=lambda x: x[1], reverse=True)
     return [r[0] for r in results[:k]]
+
+def save_to_json(data: List, data_path=''):
+    if not os.path.isfile(data_path):
+        # 文件不存在，创建新列表并写入文件
+        with open(data_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+        return
+    try:
+        # 尝试读取现有文件
+        with open(data_path, 'r', encoding='utf-8') as file:
+            # 加载现有的JSON数据
+            existing_data = json.load(file)
+            existing_data.extend(data)
+    except json.JSONDecodeError:
+        # 文件不是有效的JSON，打印错误信息并退出
+        print(f"文件 {data_path} 不是有效的JSON格式。")
+        return
+    except ValueError as e:
+        # 打印错误信息并退出
+        print(e)
+        return
+    # 将更新后的数据写回文件
+    with open(data_path, 'w', encoding='utf-8') as file:
+        json.dump(existing_data, file, ensure_ascii=False, indent=4)
+
+def random_sample(lst, k=3):
+    try:
+        # 尝试从列表中随机抽取k个不重复的元素
+        return random.sample(lst, k)
+    except ValueError:
+        # 如果列表长度小于k，返回整个列表
+        return lst

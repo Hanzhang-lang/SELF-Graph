@@ -138,17 +138,26 @@ def process_relation_data(line):
                     "paths": p,
                     "effective": False
                 })
-            sent_idx += 1
+        sent_idx += 1
     return {"qid": id, "query": line['question'], "topic_entity": topic_entity, "answer": answer, "chains": chain_data}
 
 if __name__ == '__main__':
     mp.set_start_method('spawn', force=True)
     set_start_method("spawn")
     parser = argparse.ArgumentParser()
+    parser.add_argument('--split', type=str, default='train', help='data split')
     parser.add_argument("--dataset", type=str,
                         default="webqsp", help="choose the dataset.")
+    parser.add_argument('--save', action='store_true', help='save the data')
+    parser.add_argument('--save_path', type=str, default='./output/chain_data/webqsp_train_chain_top_5_0116.json',
+                        help='save the data')
+    parser.add_argument('--n_proc', type=int, default=8, help='number of processes')
     args = parser.parse_args()
-    relation_data_train = datasets.load_dataset('rmanluo/RoG-cwq', split='validation')
-    processed_data = relation_data_train.map(process_relation_data, num_proc=8, remove_columns=relation_data_train.column_names)
-    # processed_data.to_json('./output/chain_data/cwq_dev_chain_top_5.json')
+    if args.dataset == 'webqsp':
+        relation_data = datasets.load_dataset('rmanluo/RoG-webqsp', split=args.split)
+    if args.dataset == 'cwq':
+        relation_data = datasets.load_dataset('rmanluo/RoG-cwq', split=args.split)
+    processed_data = relation_data.map(process_relation_data, num_proc=args.n_proc, remove_columns=relation_data.column_names)
+    if args.save:
+        processed_data.to_json(args.save_path)
     print('success')
