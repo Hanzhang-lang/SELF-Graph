@@ -25,6 +25,16 @@ def invoke_chain(chain, fallback_chain, params):
     except ValueError:
         return fallback_chain.invoke(params)['text']
 
+def process_utility(query, answer):
+    utility_text = utility_chain.invoke({"query": query, "output":answer})['text']
+    try:
+        content = eval(utility_text)
+        individual = content['individual_scores']
+        overall = content['overall_scores']
+    except:
+        individual = {}
+        overall = "[Utility:3]"
+    return individual, overall
 
 def process_relationship(query, processed_relationship, topic_entity):
     """处理关系相关性"""
@@ -81,6 +91,7 @@ if __name__ == '__main__':
     with open(args.chain_data, 'r') as f:
         for line in f.readlines():
             dev_chain_data.append(json.loads(line))
+    # dev_chain_data = random.sample(dev_chain_data, 1000)
     print('Input data length:', len(dev_chain_data))
     openai_model = ChatOpenAI(model='gpt-3.5-turbo', base_url="https://api.chatanywhere.tech/v1",
                               api_key="sk-bLZSHx4pKfPRZkYyIyyvUHSEjrlqj5sh2QIsxOM23yJnyoGD")
@@ -99,6 +110,7 @@ if __name__ == '__main__':
         )
     relevance_chain = LLMChain(
         llm=model, prompt=few_shot_all_relation_prompt, verbose=args.verbose)
+    utility_chain = LLMChain(llm=model, prompt=few_shot_is_useful, verbose=args.verbose)
     triplet_chain = LLMChain(
         llm=model, prompt=few_shot_entity_prompt, verbose=args.verbose)
     relevance_chain_oa = LLMChain(
@@ -106,24 +118,49 @@ if __name__ == '__main__':
     triplet_chain_oa = LLMChain(
         llm=openai_model, prompt=few_shot_entity_prompt, verbose=args.verbose)
     reason_chain = LLMChain(
-        llm=model, prompt=few_shot_path_prompt, verbose=args.verbose)
+        llm=model, prompt=few_shot_path_prompt_meta, verbose=args.verbose)
     if args.task == 'all':
-        current_task = ['r_relevance', 'e_relevance', 'reasoness']
+        current_task = ['r_relevance', 'e_relevance', 'reasoness', 'utility']
     else:
         current_task = [args.task]
+    with open('./output/generate/metaqa_sample_1500_0207.json', 'r') as f:
+        already_data = json.load(f)
+    already_ids = set([d['qid'] for d in already_data])
+    print(len(already_ids))
     preceding_sentences = ""
     starter = '[New Retrieval]'
     reasoning_path = []
     output = []
+    output_utility = []
     flag = True
-    already_ids = set()
+    with open('./output/generate/metaqa_sample_0210.json', 'r') as f:
+        already_data = json.load(f)
+    already_ids.update([d['qid'] for d in already_data])
+    print(len(already_ids))
+    # already_ids = set()
     # random.seed(42)
-    for count, dev_data in enumerate(dev_chain_data[1680:]):
+    for count, dev_data in enumerate(dev_chain_data):
         query = dev_data['query']
         tmp_scores = []
+        if len(output) == 10:
+            print(f'Saving {count}')
+            save_to_json(output, args.output_file)
+            output = []
+        if len(output_utility) == 10:
+            print(f'Saving {count}')
+            save_to_json(output_utility, './output/generate/metaqa_sample_1500_0210_uti.json')
+            output_utility = []
+        if 'utility' in current_task:
+            if dev_data['qid'] in already_ids:
+                continue
+            individual, overall = process_utility(query, ', '.join(dev_data['answer'][:10]))
+            output_utility.append({"qid": dev_data['qid'], "query": query, "answer": dev_data['answer'][:10], "scores": [{"utility_score": overall, "individual_score": individual}],"score_type": 'utility'})
         for chain_line in dev_data['chains']:
+            if dev_data['qid'] in already_ids:
+                continue
             score_dict = {}
             topic_entity = chain_line['paths'][chain_line['chain_step'] - 1][0]
+            
 
             # 处理关系相关性任务
             if 'r_relevance' in current_task:
@@ -158,7 +195,7 @@ if __name__ == '__main__':
                     f"({topic_entity}, {chain_line['real_relation']}, {chain_line['real_entity']})"
                 )
                 score_dict['reasoness'] = process_reasoning_score(
-                    query, dev_data['answer'], reasoning_path
+                    query, dev_data['answer'][:5], reasoning_path
                 )
 
 
@@ -189,8 +226,6 @@ if __name__ == '__main__':
                 flag = True
                 already_ids.add(dev_data['qid'])
                 break
-        if count % 10 == 0 and len(output):
-            print(f'Saving {count}')
-            save_to_json(output, args.output_file)
-            output = []
     save_to_json(output, args.output_file)
+    # save_to_json(output_utility, args.output_file)
+    save_to_json(output_utility, './output/generate/metaqa_sample_1500_0210_uti.json')

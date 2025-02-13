@@ -1162,14 +1162,14 @@ def get_another_entity(entity: str, relation: str, return_label=True):
             SELECT DISTINCT ?x0  WHERE {
             """ + '?x0' + ' :' + relation + ' :' + entity + '. ' + """
     }
-    }"""
+    } LIMIT 100"""
     query2 = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             PREFIX : <http://rdf.freebase.com/ns/> 
             SELECT (?x0 AS ?value) WHERE {
             SELECT DISTINCT ?x0  WHERE {
             """ + ':' + entity + ' :' + relation +  '?x0' + '. ' + """
-    }  }"""
+    }  } LIMIT 100"""
     output = execute_query(query1) + execute_query(query2)
     if return_label:
             output = dict(zip([get_label_with_odbc(e) or e for e in output], output 
