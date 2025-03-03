@@ -9,7 +9,6 @@ import json
 import re
 from src.utils import save_to_json
 
-# saving 1680
 def extract_relationship_and_score(s):
     match_dict = dict()
     pattern = r'{(.+?) \(Score: (.+?)\)}'
@@ -86,6 +85,7 @@ if __name__ == '__main__':
     parser.add_argument("--task", type=str, default='r_relevance')
     parser.add_argument("--output_file", type=str,
                         default='output/generate/test.json')
+    parser.add_argument("--openai_api_key")
     args = parser.parse_args()
     dev_chain_data = []
     with open(args.chain_data, 'r') as f:
@@ -133,10 +133,6 @@ if __name__ == '__main__':
     output = []
     output_utility = []
     flag = True
-    with open('./output/generate/metaqa_sample_0210.json', 'r') as f:
-        already_data = json.load(f)
-    already_ids.update([d['qid'] for d in already_data])
-    print(len(already_ids))
     # already_ids = set()
     # random.seed(42)
     for count, dev_data in enumerate(dev_chain_data):
