@@ -5,8 +5,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_file", type=str,
-                        default="./output/generate/test.json", help="choose the dataset.")
-    parser.add_argument("--task", type=str, default='r_relevance')
+                        default="./output/generate/webqsp_0524_gpt35.json", help="choose the dataset.")
     parser.add_argument("--output_file", type=str,
                         default='output/generate/test_output.json')
     outputs = []
@@ -14,14 +13,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     with open(args.input_file, 'r') as f:
         generate_data = json.load(f)
-    with open('./output/generate/metaqa_sample_1500_0210_uti_copy.json', 'r') as f:
-        uti_data = json.load(f)
-    id2uti = {}
-    for uti in uti_data:
-        id2uti[uti['qid']] = uti['scores'][0]
     for data in generate_data:
-        if data['qid'] not in id2uti:
-            continue
         cur_sent = 0
         for step in data['scores']:
             content = step['score']
@@ -35,8 +27,8 @@ if __name__ == '__main__':
                 break
         if len(starter):
             starter += '[No Retrieval]'
-            starter += 'Answer: '+ ';'.join([f"{r}{s}" for r, s in id2uti[data['qid']]['individual_score'].items()])
-            starter += id2uti[data['qid']]["utility_score"]
+            starter += 'Answer: '+ ';'.join([f"{r}{s}" for r, s in data['uti_scores'][0]['individual_score'].items()])
+            starter += data['uti_scores'][0]["utility_score"]
             outputs.append({"instruction": data['query'], "input": "", "output": starter})
             starter = ''
 

@@ -40,19 +40,15 @@ db = FAISS.from_texts(data, cached_embedder)
 retriever = db.as_retriever(search_kwargs={"k": 5})
 def save_to_json(data: List, data_path='../output/chain_data.json'):
     if not os.path.isfile(data_path):
-        # 文件不存在，创建新列表并写入文件
         with open(data_path, 'w', encoding='utf-8') as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
         return
     try:
-        # 尝试读取现有文件
         with open(data_path, 'r', encoding='utf-8') as file:
-            # 加载现有的JSON数据
             existing_data = json.load(file)
             existing_data.extend(data)
     except json.JSONDecodeError:
-        # 文件不是有效的JSON，打印错误信息并退出
-        print(f"文件 {data_path} 不是有效的JSON格式。")
+        print(f"{data_path} not valid")
         return
     except ValueError as e:
         # 打印错误信息并退出
@@ -160,4 +156,4 @@ if __name__ == '__main__':
     processed_data = relation_data.map(process_relation_data, num_proc=args.n_proc, remove_columns=relation_data.column_names)
     if args.save:
         processed_data.to_json(args.save_path)
-    print('success')
+    print('relation created success')

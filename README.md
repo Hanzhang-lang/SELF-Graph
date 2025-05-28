@@ -1,6 +1,6 @@
 
 
-Official implementation of the paper "Learning to Retrieve and Reason on Knowledge Graph through Active Self-Reflection" . We warmly welcome discussions on KBQA together!\
+Official implementation of the paper "ArG: Learning to Retrieve and Reason on Knowledge Graph through Active Self-Reflection" . We warmly welcome discussions on KBQA together!\
 
 ![WordFlow](./ArG.png)
 
@@ -11,7 +11,7 @@ We extracted the paths in the knowledge graph through relation paths and generat
 
 ```
 # process relation data
-python -m src.data_creation.relation_data --split train --dataset webqsp --save_path ./output/chain_data/webqsp_train_chain_top_5.json
+python -m src.data_creation.relation_data --split train --dataset webqsp --save_path ./output/chain_data/webqsp_train_chain_top_5_test.json
 
 # create training data
 python -m src.data_creation.generate_data
