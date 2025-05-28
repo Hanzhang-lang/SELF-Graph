@@ -1,0 +1,64 @@
+# LLaMA-Factory Dependencies (prioritized where versions are specified)
+transformers>=4.45.0,<=4.52.3,!=4.46.*,!=4.47.*,!=4.48.0,!=4.52.0
+datasets>=2.16.0,<=3.6.0
+accelerate>=0.34.0,<=1.7.0
+peft>=0.14.0,<=0.15.2
+trl>=0.8.6,<=0.9.6
+tokenizers>=0.19.0,<=0.21.1
+gradio>=4.38.0,<=5.31.0
+scipy
+einops
+sentencepiece
+tiktoken
+protobuf
+uvicorn
+fastapi
+sse-starlette
+matplotlib>=3.7.0
+fire
+omegaconf
+packaging
+pyyaml
+numpy<2.0.0
+pydantic<=2.10.6
+pandas>=2.0.0
+av
+librosa
+tyro<0.9.0
+
+# ArG Project Specific Dependencies & Others from README Setup
+# Versions for the following are not specified unless they overlap with LLaMA-Factory above.
+# Consider pinning versions for stable builds.
+
+# Langchain stack
+langchain
+langchain-openai
+langchain-community
+
+# Core ML/Execution
+vllm
+torch # Implicitly required by transformers, vllm, etc. Included for explicitness. Consider aligning with LLaMA-Factory's torch version if known.
+
+# Vector Store & Embeddings
+faiss-cpu # For FAISS vector store. For GPU support, install faiss-gpu and ensure CUDA compatibility.
+# Note: BAAI/bge-large-en-v1.5 embeddings are used by default in scripts.
+
+# Data & Graph Handling
+networkx
+redis # For Langchain's RedisStore (optional caching, requires Redis server)
+multiprocess # For parallel processing in data_creation
+huggingface-hub # Often a peer dependency for transformers and datasets
+
+# Utilities
+tqdm # For progress bars
+graphviz # For visualizations in notebooks (optional)
+sparqlwrapper # For SPARQL queries in src/sparql_utils.py
+pyodbc # For ODBC connection in src/sparql_utils.py (requires system-level ODBC drivers)
+scikit-learn # For metrics in src/utils.py
+
+# Note on 'walker':
+# The import 'walker' is used in 'src/data_creation/relation_data.py' and 'src/graph_utils.py'.
+# This appears to be a local module or a specific library not commonly found on PyPI.
+# If it's a custom module within this project, ensure it's in PYTHONPATH.
+# If it's an external dependency, its specific installation source needs to be identified.
+# (e.g., if it were 'pywalker', one would add 'pywalker' to this list).
