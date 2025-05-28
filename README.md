@@ -2,13 +2,11 @@
 
 Official implementation of the paper "ArG: Learning to Retrieve and Reason on Knowledge Graph through Active Self-Reflection". This project introduces ArG, a framework designed to enhance Knowledge Base Question Answering (KBQA) by actively learning how to retrieve relevant information and reason over it through a process of self-reflection. We warmly welcome discussions and collaborations in the field of KBQA!
 
-The ArG framework, illustrating its workflow, is depicted in the following diagram:
-
 ![WordFlow](./ArG.png)
 
 ## Getting Started
 
-Welcome to ArG! This project enables you to leverage active self-reflection for retrieving and reasoning on knowledge graphs. Here's a typical workflow to get you started:
+Welcome to ArG! This project enables you to leverage active self-reflection for retrieving and reasoning on knowledge graphs.
 
 1.  **Set up your environment**: Begin by preparing your Python environment and installing all necessary dependencies. Detailed instructions can be found in the **[Setup](#setup)** section.
 2.  **Prepare your data**: The next step is to process your knowledge graph data and generate the specific formats required for training. This involves extracting relation paths, using language models to score them, and composing the final training data. Please refer to the **[Data Creation](#data-creation)** subsection under **[Training](#training)** for scripts and commands.
