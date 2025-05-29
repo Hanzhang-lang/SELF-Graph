@@ -19,6 +19,7 @@ Following these steps will guide you through using the ArG project from initial 
 
 This project requires Python 3.10 or newer.
 
+
 1.  **Clone the repository & install dependencies:**
     ```bash
     git clone https://github.com/rmanluo/ArG.git
@@ -73,6 +74,7 @@ This stage involves processing the knowledge graph, generating scored data using
     # Example using Azure OpenAI
     # Ensure AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_CHAT_DEPLOYMENT_NAME, 
     # and AZURE_OPENAI_API_VERSION are set as environment variables or passed as arguments.
+    
     python -m src.data_creation.generate_data \
       --chain_data ./output/chain_data/webqsp_train_chain_data.json \
       --use_azure \
@@ -92,6 +94,7 @@ This stage involves processing the knowledge graph, generating scored data using
       --input_file ./output/generate/webqsp_train_generated_data.json \
       --output_file ./output/final_training_data/webqsp_train_composed.json
     ```
+
 
 ### Model Training
 Once the data creation steps are complete, you would typically proceed to train your language model using the generated datasets. This project uses VLLM for efficient model serving during inference, and training would likely involve fine-tuning a base model on the data produced by `composite_data.py`.
